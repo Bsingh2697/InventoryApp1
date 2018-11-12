@@ -32,7 +32,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
                 +BookEntry.BOOK_PRICE+" REAL NOT NULL DEFAULT 0, "
                 +BookEntry.BOOK_QUANTITY+" INTEGER DEFAULT 1, "
                 +BookEntry.BOOK_AUTHOR_NAME+" TEXT, "
-                +BookEntry.BOOK_LANGUAGE+" TEXT );";
+                +BookEntry.BOOK_LANGUAGE+" TEXT NOT NULL);";
         db.execSQL(SQL_CREATE_BOOKS_TABLE);
     }
 

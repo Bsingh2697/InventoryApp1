@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">InventoryApp1</string>
+    <string name="unknown_author">Unknown Author</string>
+    <string name="empty_view_title_text">It\'s a bit lonely here</string>
+    <string name="empty_view_subtitle_text">Get Started by adding a book</string>
+    <string name="insert_dummy_book">Insert Dummy Book</string>
+    <string name="delete_all_books">Delete all Books</string>
+    <string name="delete_all_books_dialog_msg">Delete all Books?\nAre you sure!</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_a_book">Add a Book</string>
+    <string name="edit_book">Edit Book</string>
+    <string name="save">Save</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep Editing</string>
+    <string name="error_deleting_book">Error Deleting Book</string>
+    <string name="book_deleted">Book Deleted</string>
+    <string name="delete_this_book">Delete this Book?</string>
+    <string name="error_saving_book">Error with saving book</string>
+    <string name="book_saved">Book Saved</string>
+    <string name="update_failed">Update failed</string>
+    <string name="update_successful">Update Successful</string>
+    <string name="unsaved_changes_dialog">Discard your changes and quit editing?</string>
+    <string name="buy">Buy</string>
+    <string name="book">Book</string>
+    <string name="price">Price</string>
+    <string name="in_stock">In stock</string>
+    <string name="language">Language</string>
 </resources>
