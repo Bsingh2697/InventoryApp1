@@ -76,18 +76,35 @@
             android:text="@string/in_stock"
             style="@style/CategoryStyle" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="2"
+            android:orientation="horizontal"
             android:paddingLeft="4dp">
 
+            <Button
+                android:id="@+id/increment_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/edit_book_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:hint="1"
                 android:inputType="number"
                 style="@style/EditorFieldStyle" />
-        </RelativeLayout>
+            <Button
+                android:id="@+id/decrement_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

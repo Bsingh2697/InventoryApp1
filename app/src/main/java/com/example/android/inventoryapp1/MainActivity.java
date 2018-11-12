@@ -2,6 +2,7 @@ package com.example.android.inventoryapp1;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -20,17 +21,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.android.inventoryapp1.bookData.BookContract.BookEntry;
 import static com.example.android.inventoryapp1.bookData.BookContract.BookEntry.CONTENT_URI;
 
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
+        BookCursorAdapter.ProductItemClickListener {
 
     private static final int BOOK_LOADER = 0;
+    public static  ListView bookListView;
     BookCursorAdapter cursorAdapter;
 
 
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // Setup an adapter to create a list item for each row of book data in the cursor.
         // There is no book data yet{until the loader finishes} so pass in null for the cursor.
-        cursorAdapter = new BookCursorAdapter(this,null);
+        cursorAdapter = new BookCursorAdapter(this,null,this);
         bookListView.setAdapter(cursorAdapter);
 
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         ContentValues values = new ContentValues();
         values.put(BookEntry.BOOK_NAME, "Wings Of Fire");
-        values.put(BookEntry.BOOK_PRICE, 20.2);
+        values.put(BookEntry.BOOK_PRICE, 20);
         values.put(BookEntry.BOOK_QUANTITY, 100);
         values.put(BookEntry.BOOK_AUTHOR_NAME, "A.P.J Abdul Kalam");
         values.put(BookEntry.BOOK_LANGUAGE, "English");
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 BookEntry._ID,
                 BookEntry.BOOK_NAME,
                 BookEntry.BOOK_AUTHOR_NAME,
+                BookEntry.BOOK_QUANTITY,
                 BookEntry.BOOK_PRICE};
         return new CursorLoader(this,
                 CONTENT_URI,
@@ -159,5 +161,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         cursorAdapter.swapCursor(null);
+    }
+
+    public int onBookSold(int position, int newQuantity){
+        ContentValues values = new ContentValues();
+        values.put(BookEntry.BOOK_QUANTITY,newQuantity);
+        int rowUpdated = getContentResolver().update(Uri.withAppendedPath(BookEntry.CONTENT_URI, String.valueOf(bookListView.getItemIdAtPosition(position))),values,null,null);
+        return  rowUpdated;
     }
 }

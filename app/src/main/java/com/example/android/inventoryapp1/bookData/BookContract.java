@@ -27,7 +27,7 @@ public final class BookContract {
     /**
      * Possible path (appended to base contact URI for possible URI's)
      * For instance, content://com.example.android.books/books/ is a valid path for
-     * looking at pet data. content://com.example.android.books/xyz/ will fail,
+     * looking at book data. content://com.example.android.books/xyz/ will fail,
      * as the ContentProvider hasn't been given any information, on what to do with "xyz".
      */
     public static final String PATH_BOOKS = "books";
@@ -39,18 +39,18 @@ public final class BookContract {
     public static final class BookEntry implements BaseColumns{
 
         /**
-         *  This content URI to access the pet data in the provider
+         *  This content URI to access the book data in the provider
          */
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI,PATH_BOOKS);
 
         /**
-         * The MIME type of the {@link #CONTENT_URI} for a list of pets.
+         * The MIME type of the {@link #CONTENT_URI} for a list of books.
          */
         public static final String CONTENT_LIST_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
                 +"/"+CONTENT_AUTHORITY+"/"+PATH_BOOKS;
 
         /**
-         * The MIME type of the {@link #CONTENT_URI} for a single pet.
+         * The MIME type of the {@link #CONTENT_URI} for a single book.
          */
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
                 +"/"+CONTENT_AUTHORITY+"/"+PATH_BOOKS;

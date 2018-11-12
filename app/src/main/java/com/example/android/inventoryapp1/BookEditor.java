@@ -32,6 +32,9 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
     private EditText priceEditText;
     private EditText quantityEditText;
     private EditText languageEditText;
+    private Button incrementButton;
+    private Button decrementButton;
+    private int quantityChange = 1;
 
     /**
      * Boolean flag that keeps track of weather the book has been edited(true) or not(false)
@@ -70,6 +73,8 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
         priceEditText = findViewById(R.id.edit_book_price);
         quantityEditText = findViewById(R.id.edit_book_quantity);
         languageEditText = findViewById(R.id.edit_book_language);
+        incrementButton = findViewById(R.id.increment_button);
+        decrementButton = findViewById(R.id.decrement_button);
 
         nameEditText.setOnTouchListener(touchListener);
         authorEditText.setOnTouchListener(touchListener);
@@ -261,6 +266,35 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
             quantityEditText.setText(Integer.toString(quantity));
             languageEditText.setText(language);
 
+            incrementButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String quantity = quantityEditText.getText().toString();
+                    int newQuantity = Integer.valueOf(quantity)+ quantityChange;
+                    if(newQuantity>=0){
+                        ContentValues values = new ContentValues();
+                        values.put(BookEntry.BOOK_QUANTITY,newQuantity);
+                        getContentResolver().update(currentBookUri,values,null,null);
+                        quantityEditText.setText(String.valueOf(newQuantity));
+                    }
+                }
+            });
+
+            decrementButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String quantity = quantityEditText.getText().toString();
+                    int newQuantity = Integer.valueOf(quantity)-quantityChange;
+                    if(newQuantity>=0){
+                        ContentValues values = new ContentValues();
+                        values.put(BookEntry.BOOK_QUANTITY,newQuantity);
+                        getContentResolver().update(currentBookUri, values,null,null);
+                        quantityEditText.setText(String.valueOf(newQuantity));
+                    }else{
+                        Toast.makeText(BookEditor.this,"Books Cannot be negative",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 

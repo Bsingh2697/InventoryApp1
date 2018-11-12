@@ -147,16 +147,16 @@ public class BookProvider extends ContentProvider {
         final int match = uriMatcher.match(uri);
         switch(match){
             case BOOKS:
-                return updatePet(uri, contentValues, selection, selectionArgs);
+                return updateBook(uri, contentValues, selection, selectionArgs);
             case BOOKS_ID:
                 selection = BookEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return updatePet(uri,contentValues,selection,selectionArgs);
+                return updateBook(uri,contentValues,selection,selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for "+uri);
         }
     }
-    public int updatePet(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
+    public int updateBook(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
         if (contentValues.containsKey(BookEntry.BOOK_NAME)) {
             String name = contentValues.getAsString(BookEntry.BOOK_NAME);
             if (name == null) {
