@@ -14,6 +14,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -28,10 +29,10 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
     private static final int EXISTING_BOOK_LOADER = 0;
     private Uri currentBookUri;
     private EditText nameEditText;
-    private EditText authorEditText;
+    private EditText supplierEditText;
     private EditText priceEditText;
     private EditText quantityEditText;
-    private EditText languageEditText;
+    private EditText phoneEditText;
     private Button incrementButton;
     private Button decrementButton;
     private int quantityChange = 1;
@@ -61,38 +62,38 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
         // in order to figure out if we're creating a new book record ot editing an existing one.
         Intent intent = getIntent();
         currentBookUri = intent.getData();
-        if(currentBookUri == null){
+        if (currentBookUri == null) {
             setTitle(R.string.add_a_book);
             invalidateOptionsMenu();
-        }else{
+        } else {
             setTitle(R.string.edit_book);
-            getSupportLoaderManager().initLoader(EXISTING_BOOK_LOADER,null,this);
+            getSupportLoaderManager().initLoader(EXISTING_BOOK_LOADER, null, this);
         }
         nameEditText = findViewById(R.id.edit_book_name);
-        authorEditText = findViewById(R.id.edit_book_author);
+        supplierEditText = findViewById(R.id.edit_supplier_name);
         priceEditText = findViewById(R.id.edit_book_price);
         quantityEditText = findViewById(R.id.edit_book_quantity);
-        languageEditText = findViewById(R.id.edit_book_language);
+        phoneEditText = findViewById(R.id.edit_supplier_number);
         incrementButton = findViewById(R.id.increment_button);
         decrementButton = findViewById(R.id.decrement_button);
 
         nameEditText.setOnTouchListener(touchListener);
-        authorEditText.setOnTouchListener(touchListener);
+        supplierEditText.setOnTouchListener(touchListener);
         priceEditText.setOnTouchListener(touchListener);
         quantityEditText.setOnTouchListener(touchListener);
-        languageEditText.setOnTouchListener(touchListener);
+        phoneEditText.setOnTouchListener(touchListener);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_editor,menu);
+        getMenuInflater().inflate(R.menu.menu_editor, menu);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if(currentBookUri ==null){
+        if (currentBookUri == null) {
             MenuItem menuItem = menu.findItem(R.id.action_delete);
             menuItem.setVisible(false);
         }
@@ -101,7 +102,7 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_save:
                 saveBook();
                 finish();
@@ -110,7 +111,7 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
                 showDeleteConfirmationDialog();
                 return true;
             case android.R.id.home:
-                if(!bookHasChanged){
+                if (!bookHasChanged) {
                     NavUtils.navigateUpFromSameTask(BookEditor.this);
                     return true;
                 }
@@ -128,7 +129,7 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
 
     @Override
     public void onBackPressed() {
-        if(!bookHasChanged) {
+        if (!bookHasChanged) {
             super.onBackPressed();
             return;
         }
@@ -141,7 +142,7 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
         showUnsavedChangesDialog(discardButtonClickListener);
     }
 
-    private void showDeleteConfirmationDialog(){
+    private void showDeleteConfirmationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_this_book);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
@@ -153,7 +154,7 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                if(dialogInterface != null){
+                if (dialogInterface != null) {
                     dialogInterface.dismiss();
                 }
             }
@@ -162,45 +163,51 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
         alertDialog.show();
     }
 
-    private void saveBook(){
+    private void saveBook() {
         String nameString = nameEditText.getText().toString().trim();
-        String authorString = authorEditText.getText().toString().trim();
+        String supplierString = supplierEditText.getText().toString().trim();
         String priceString = priceEditText.getText().toString().trim();
         String quantityString = quantityEditText.getText().toString().trim();
-        String languageString = languageEditText.getText().toString().trim();
+        String phoneString = phoneEditText.getText().toString().trim();
 
-        ContentValues values = new ContentValues();
-        values.put(BookEntry.BOOK_NAME, nameString);
-        values.put(BookEntry.BOOK_AUTHOR_NAME, authorString);
-        values.put(BookEntry.BOOK_PRICE, priceString);
-        values.put(BookEntry.BOOK_QUANTITY, quantityString);
-        values.put(BookEntry.BOOK_LANGUAGE, languageString);
 
-        if(currentBookUri == null){
-            Uri newUri = getContentResolver().insert(BookEntry.CONTENT_URI,values);
-            if(newUri == null){
-                Toast.makeText(this,getString(R.string.error_saving_book), Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(this,getString(R.string.book_saved), Toast.LENGTH_SHORT).show();
-            }
-        }else{
-            int rowsAffected = getContentResolver().update(currentBookUri, values,null,null);
-            if(rowsAffected == 0){
-                Toast.makeText(this,getString(R.string.update_failed), Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(this,getString(R.string.update_successful),Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(nameString) || TextUtils.isEmpty(supplierString) ||
+                TextUtils.isEmpty(priceString) || TextUtils.isEmpty(quantityString) ||
+                TextUtils.isEmpty(phoneString)) {
+            Toast.makeText(this, getString(R.string.empty_details), Toast.LENGTH_SHORT).show();
+        } else {
+            ContentValues values = new ContentValues();
+            values.put(BookEntry.BOOK_NAME, nameString);
+            values.put(BookEntry.BOOK_SUPPLIER_NAME, supplierString);
+            values.put(BookEntry.BOOK_PRICE, priceString);
+            values.put(BookEntry.BOOK_QUANTITY, quantityString);
+            values.put(BookEntry.BOOK_SUPPLIER_PHONE, phoneString);
+
+            if (currentBookUri == null) {
+                Uri newUri = getContentResolver().insert(BookEntry.CONTENT_URI, values);
+                if (newUri == null) {
+                    Toast.makeText(this, getString(R.string.error_saving_book), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, getString(R.string.book_saved), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                int rowsAffected = getContentResolver().update(currentBookUri, values, null, null);
+                if (rowsAffected == 0) {
+                    Toast.makeText(this, getString(R.string.update_failed), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, getString(R.string.update_successful), Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
 
-    private void deleteBook(){
-        if(currentBookUri != null)
-        {
-            int rowsDeleted = getContentResolver().delete(currentBookUri,null,null);
+    private void deleteBook() {
+        if (currentBookUri != null) {
+            int rowsDeleted = getContentResolver().delete(currentBookUri, null, null);
             if (rowsDeleted == 0) {
-                Toast.makeText(this,R.string.error_deleting_book,Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(this,R.string.book_deleted,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.error_deleting_book, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, R.string.book_deleted, Toast.LENGTH_SHORT).show();
             }
             finish();
         }
@@ -209,11 +216,11 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
     private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.unsaved_changes_dialog);
-        builder.setPositiveButton(R.string.discard,discardButtonClickListener);
+        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                if(dialogInterface != null){
+                if (dialogInterface != null) {
                     dialogInterface.dismiss();
                 }
             }
@@ -228,10 +235,10 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
         String[] projection = {
                 BookEntry._ID,
                 BookEntry.BOOK_NAME,
-                BookEntry.BOOK_AUTHOR_NAME,
+                BookEntry.BOOK_SUPPLIER_NAME,
                 BookEntry.BOOK_PRICE,
                 BookEntry.BOOK_QUANTITY,
-                BookEntry.BOOK_LANGUAGE
+                BookEntry.BOOK_SUPPLIER_PHONE
         };
         return new CursorLoader(this,
                 currentBookUri,
@@ -243,67 +250,37 @@ public class BookEditor extends AppCompatActivity implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        if(cursor == null || cursor.getCount()<1)
-        {
+        if (cursor == null || cursor.getCount() < 1) {
             return;
         }
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             int nameColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_NAME);
-            int authorColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_AUTHOR_NAME);
+            int supplierColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_SUPPLIER_NAME);
             int priceColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_QUANTITY);
-            int languageColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_LANGUAGE);
+            int phoneColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_SUPPLIER_PHONE);
 
             String name = cursor.getString(nameColumnIndex);
-            String author = cursor.getString(authorColumnIndex);
+            String supplier = cursor.getString(supplierColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
-            String language = cursor.getString(languageColumnIndex);
+            String phone = cursor.getString(phoneColumnIndex);
 
             nameEditText.setText(name);
-            authorEditText.setText(author);
+            supplierEditText.setText(supplier);
             priceEditText.setText(Integer.toString(price));
             quantityEditText.setText(Integer.toString(quantity));
-            languageEditText.setText(language);
+            phoneEditText.setText(phone);
 
-            incrementButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String quantity = quantityEditText.getText().toString();
-                    int newQuantity = Integer.valueOf(quantity)+ quantityChange;
-                    if(newQuantity>=0){
-                        ContentValues values = new ContentValues();
-                        values.put(BookEntry.BOOK_QUANTITY,newQuantity);
-                        getContentResolver().update(currentBookUri,values,null,null);
-                        quantityEditText.setText(String.valueOf(newQuantity));
-                    }
-                }
-            });
-
-            decrementButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String quantity = quantityEditText.getText().toString();
-                    int newQuantity = Integer.valueOf(quantity)-quantityChange;
-                    if(newQuantity>=0){
-                        ContentValues values = new ContentValues();
-                        values.put(BookEntry.BOOK_QUANTITY,newQuantity);
-                        getContentResolver().update(currentBookUri, values,null,null);
-                        quantityEditText.setText(String.valueOf(newQuantity));
-                    }else{
-                        Toast.makeText(BookEditor.this,"Books Cannot be negative",Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
         }
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         nameEditText.setText("");
-        authorEditText.setText("");
+        supplierEditText.setText("");
         priceEditText.setText("");
         quantityEditText.setText("");
-        languageEditText.setText("");
+        phoneEditText.setText("");
     }
 }

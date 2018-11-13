@@ -7,10 +7,8 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.text.Selection;
 import android.util.Log;
 
-import com.example.android.inventoryapp1.BookEditor;
 import com.example.android.inventoryapp1.bookData.BookContract.BookEntry;
 
 public class BookProvider extends ContentProvider {
@@ -102,10 +100,21 @@ public class BookProvider extends ContentProvider {
             throw new IllegalArgumentException("Book requires a valid Price");
         }
         // Check that the quantity is not null
-        String language = values.getAsString(BookEntry.BOOK_QUANTITY);
-        if(language == null){
-            throw new IllegalArgumentException("Please enter the Book language");
+        Integer quantity = values.getAsInteger(BookEntry.BOOK_QUANTITY);
+        if(quantity == null){
+            throw new IllegalArgumentException("Please enter the Book Quantity");
         }
+        // Check that the Supplier name is not null
+        String supplier = values.getAsString(BookEntry.BOOK_SUPPLIER_NAME);
+        if(supplier == null){
+            throw new IllegalArgumentException("Please enter Supplier Name");
+        }
+        // Check that the Supplier Phone Number is not null
+        String phone = values.getAsString(BookEntry.BOOK_SUPPLIER_PHONE);
+        if(phone == null){
+            throw new IllegalArgumentException("Please enter Supplier Phone Number");
+        }
+
 
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         long id = database.insert(BookEntry.TABLE_NAME,null,values);
@@ -166,13 +175,25 @@ public class BookProvider extends ContentProvider {
         if (contentValues.containsKey(BookEntry.BOOK_PRICE)) {
             Integer price = contentValues.getAsInteger(BookEntry.BOOK_PRICE);
             if (price != null && price < 0) {
-                throw new IllegalArgumentException("Please! enter the price");
+                throw new IllegalArgumentException("Please! enter the correct price");
             }
         }
-        if (contentValues.containsKey(BookEntry.BOOK_LANGUAGE)) {
-            String language = contentValues.getAsString(BookEntry.BOOK_LANGUAGE);
-            if (language == null) {
-                throw new IllegalArgumentException("Please! update the book language");
+        if (contentValues.containsKey(BookEntry.BOOK_SUPPLIER_PHONE)) {
+            String phone = contentValues.getAsString(BookEntry.BOOK_SUPPLIER_PHONE);
+            if (phone == null) {
+                throw new IllegalArgumentException("Please! update the Supplier Phone Number");
+            }
+        }
+        if(contentValues.containsKey(BookEntry.BOOK_SUPPLIER_NAME)){
+            String supplier = contentValues.getAsString(BookEntry.BOOK_SUPPLIER_NAME);
+            if(supplier == null){
+                throw new IllegalArgumentException("Supplier name is needed!");
+            }
+        }
+        if(contentValues.containsKey(BookEntry.BOOK_QUANTITY)){
+            Integer quantity = contentValues.getAsInteger(BookEntry.BOOK_QUANTITY);
+            if(quantity != null && quantity <0){
+                throw new IllegalArgumentException("Specify valid Book Quantity");
             }
         }
         //if there are no values to update, then don't try to update the DB

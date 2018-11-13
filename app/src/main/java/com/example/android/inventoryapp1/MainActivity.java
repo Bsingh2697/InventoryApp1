@@ -2,7 +2,6 @@ package com.example.android.inventoryapp1;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -27,11 +26,9 @@ import com.example.android.inventoryapp1.bookData.BookContract.BookEntry;
 import static com.example.android.inventoryapp1.bookData.BookContract.BookEntry.CONTENT_URI;
 
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
-        BookCursorAdapter.ProductItemClickListener {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private static final int BOOK_LOADER = 0;
-    public static  ListView bookListView;
     BookCursorAdapter cursorAdapter;
 
 
@@ -39,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,13 +54,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // Setup an adapter to create a list item for each row of book data in the cursor.
         // There is no book data yet{until the loader finishes} so pass in null for the cursor.
-        cursorAdapter = new BookCursorAdapter(this,null,this);
+        cursorAdapter = new BookCursorAdapter(this,null);
         bookListView.setAdapter(cursorAdapter);
 
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this,BookEditor.class);
+                Intent intent = new Intent(MainActivity.this,BookDetails.class);
                 Uri currentBookUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI,id);
                 intent.setData(currentBookUri);
                 startActivity(intent);
@@ -80,11 +76,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void insertBook() {
 
         ContentValues values = new ContentValues();
-        values.put(BookEntry.BOOK_NAME, "Wings Of Fire");
+        values.put(BookEntry.BOOK_NAME, getString(R.string.wing_of_fire));
         values.put(BookEntry.BOOK_PRICE, 20);
         values.put(BookEntry.BOOK_QUANTITY, 100);
-        values.put(BookEntry.BOOK_AUTHOR_NAME, "A.P.J Abdul Kalam");
-        values.put(BookEntry.BOOK_LANGUAGE, "English");
+        values.put(BookEntry.BOOK_SUPPLIER_NAME, getString(R.string.arihant));
+        values.put(BookEntry.BOOK_SUPPLIER_PHONE, "9087654321");
 
         Uri newUri = getContentResolver().insert(CONTENT_URI,values);
     }
@@ -114,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void deleteAllBook(){
         int rowsDeleted = getContentResolver().delete(BookEntry.CONTENT_URI,null,null);
-        Log.v("MainActivity", rowsDeleted +" rows deleted from the books database");
+        Log.v("MainActivity", rowsDeleted +getString(R.string.rows_deleted_from_db));
     }
 
     @Override
@@ -142,9 +138,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         String[] projection = {
                 BookEntry._ID,
                 BookEntry.BOOK_NAME,
-                BookEntry.BOOK_AUTHOR_NAME,
+                BookEntry.BOOK_SUPPLIER_NAME,
                 BookEntry.BOOK_QUANTITY,
-                BookEntry.BOOK_PRICE};
+                BookEntry.BOOK_PRICE,
+                BookEntry.BOOK_SUPPLIER_PHONE};
         return new CursorLoader(this,
                 CONTENT_URI,
                 projection,
@@ -161,12 +158,5 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         cursorAdapter.swapCursor(null);
-    }
-
-    public int onBookSold(int position, int newQuantity){
-        ContentValues values = new ContentValues();
-        values.put(BookEntry.BOOK_QUANTITY,newQuantity);
-        int rowUpdated = getContentResolver().update(Uri.withAppendedPath(BookEntry.CONTENT_URI, String.valueOf(bookListView.getItemIdAtPosition(position))),values,null,null);
-        return  rowUpdated;
     }
 }

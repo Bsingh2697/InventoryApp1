@@ -23,6 +23,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
         </activity>
+        <activity android:name=".BookDetails"
+            android:parentActivityName=".MainActivity"
+            android:label="Book Details">
+        </activity>
         <provider
             android:authorities="com.example.android.books"
             android:name=".bookData.BookProvider"></provider>

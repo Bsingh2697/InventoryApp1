@@ -98,7 +98,7 @@
             android:background="@drawable/buy"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:text="@string/buy"
+            android:text="@string/sell"
             android:textColor="#111111"
             android:textSize="10sp" />
 

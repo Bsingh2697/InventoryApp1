@@ -87,17 +87,17 @@ public final class BookContract {
         public final static String BOOK_QUANTITY = "quantity";
 
         /**
-         * Author of the Book
+         * Supplier of the Book
          *
          * Type: TEXT
          */
-        public final static String BOOK_AUTHOR_NAME = "author";
+        public final static String BOOK_SUPPLIER_NAME = "Supplier";
 
         /**
-         * Language of the Book
+         * Phone Number of the Book Supplier
          *
          * Type: TEXT
          */
-        public final static String BOOK_LANGUAGE = "language";
+        public final static String BOOK_SUPPLIER_PHONE = "phone";
     }
 }

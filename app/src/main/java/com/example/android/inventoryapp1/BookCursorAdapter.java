@@ -1,14 +1,15 @@
 package com.example.android.inventoryapp1;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,13 +17,8 @@ import com.example.android.inventoryapp1.bookData.BookContract.BookEntry;
 
 public class BookCursorAdapter extends android.support.v4.widget.CursorAdapter {
 
-    private Context context;
-    private ProductItemClickListener mListener;
-
-    public BookCursorAdapter(Context context, Cursor c, ProductItemClickListener listener) {
+    public BookCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
-        this.context = context;
-        mListener = listener;
     }
 
     @Override
@@ -38,49 +34,48 @@ public class BookCursorAdapter extends android.support.v4.widget.CursorAdapter {
         final TextView quantityTextView = view.findViewById(R.id.buy_quantity);
 
         int bookNameColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_NAME);
-        int authorColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_AUTHOR_NAME);
+        int supplierColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_SUPPLIER_NAME);
         int priceColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_PRICE);
-        int quantityColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_QUANTITY);
+        final int quantityColumnIndex = cursor.getColumnIndex(BookEntry.BOOK_QUANTITY);
 
         String bookName = cursor.getString(bookNameColumnIndex);
-        String bookAuthor = cursor.getString(authorColumnIndex);
+        String bookSupplier = cursor.getString(supplierColumnIndex);
         int bookPrice = cursor.getInt(priceColumnIndex);
         int bookQuantity = cursor.getInt(quantityColumnIndex);
 
-        if (TextUtils.isEmpty(bookAuthor)) {
-            bookAuthor = context.getString(R.string.unknown_author);
+        if (TextUtils.isEmpty(bookSupplier)) {
+            bookSupplier = context.getString(R.string.unknown_supplier);
         }
         nameTextView.setText(bookName);
-        summaryTextView.setText(bookAuthor);
+        summaryTextView.setText(bookSupplier);
         priceTextView.setText(Integer.toString(bookPrice));
         quantityTextView.setText(Integer.toString(bookQuantity));
 
+        final int cursorPosition = cursor.getPosition();
         final Button saleBtn = view.findViewById(R.id.buy_button);
         saleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String quantity = quantityTextView.getText().toString();
-                if(Integer.valueOf(quantity)>0)
-                {
-                    int newQuantity = Integer.valueOf(quantity)-1;
-                    //Gets the position of button
-                    View view1 = (View)view.getParent();
-                    View view2 = (View)view1.getParent();
-                    ListView listView = (ListView) view2.getParent();
-                    int rows = mListener.onBookSold(listView.getPositionForView(view), newQuantity);
-                    if(rows>0){
-                        Toast.makeText(context,"One Book Sold", Toast.LENGTH_SHORT).show();
 
+                ContentValues values = new ContentValues();
+                cursor.moveToPosition(cursorPosition);
+                String quantity = quantityTextView.getText().toString();
+                int bookId = cursor.getInt(cursor.getColumnIndex(BookEntry._ID));
+                if(Integer.valueOf(quantity)>0) {
+                    int newQuantity = Integer.valueOf(quantity) - 1;
+                    values.put(BookEntry.BOOK_QUANTITY, newQuantity);
+                    Uri bookSelectedUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI, bookId);
+                    int rowsAffected = context.getContentResolver().update(bookSelectedUri, values, null, null);
+                    if (rowsAffected > 0) {
+                        quantityTextView.setText(Integer.toString(newQuantity));
                     }else{
-                        Toast.makeText(context,"Error Selling Book",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context,R.string.error_selling_book,Toast.LENGTH_SHORT).show();
                     }
-                }else {
-                    Toast.makeText(context,"Book out of Stock",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(context,R.string.book_not_in_stock,Toast.LENGTH_SHORT).show();
                 }
             }
         });
-    }
-    public interface ProductItemClickListener{
-        int onBookSold(int position, int newQuantity);
+
     }
 }

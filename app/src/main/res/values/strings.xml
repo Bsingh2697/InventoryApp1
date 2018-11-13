@@ -21,10 +21,22 @@
     <string name="update_failed">Update failed</string>
     <string name="update_successful">Update Successful</string>
     <string name="unsaved_changes_dialog">Discard your changes and quit editing?</string>
-    <string name="buy">Buy</string>
+    <string name="sell">Sell</string>
     <string name="book">Book</string>
     <string name="price">Price</string>
     <string name="in_stock">In stock</string>
     <string name="language">Language</string>
     <string name="book_name">BookOpedia</string>
+    <string name="book_not_in_stock">Book not in Stock</string>
+    <string name="wing_of_fire">Wings Of Fire</string>
+    <string name="apj_abdul_kalam">A.P.J Abdul Kalam</string>
+    <string name="english">English</string>
+    <string name="rows_deleted_from_db">rows deleted from the books database</string>
+    <string name="negative_quantity">Books quantity cannot be negative</string>
+    <string name="error_selling_book">Error Selling Book</string>
+    <string name="supplier_name">Supplier Name</string>
+    <string name="supplier">Supplier</string>
+    <string name="arihant">Arihant</string>
+    <string name="empty_details">Please! Fill All Details</string>
+    <string name="unknown_supplier">Unknown Supplier</string>
 </resources>
